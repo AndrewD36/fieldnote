@@ -1,0 +1,21 @@
+[project]
+name = "research_rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Andrew Desen", email = "andrewdesen36@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "arxiv>=4.0.1",
+    "psycopg[binary]>=3.3.5",
+    "sqlalchemy>=2.0.52",
+]
+
+[project.scripts]
+fieldnote = "fieldnote:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
