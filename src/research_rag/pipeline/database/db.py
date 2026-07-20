@@ -1,5 +1,4 @@
 import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
@@ -19,6 +18,9 @@ class Base(DeclarativeBase):
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
+    connect_args={
+        "connect_timeout": 5,
+    },
 )
 
 
