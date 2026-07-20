@@ -11,6 +11,7 @@ class PaperRepository:
     ) -> None:
         self.session = session
 
+    # INGESTION METHODS
     def get_by_arxiv_id(
         self,
         arxiv_id: str,
@@ -110,6 +111,59 @@ class PaperRepository:
         error_message: str,
     ) -> None:
         record.download_status = "failed"
+        record.error_message = error_message
+
+        self.session.commit()
+
+    
+    # PREPROCESSING METHODS
+    def get_pending_preprocessing(
+        self,
+        limit: int | None = None,
+    ) -> list[PaperRecord]:
+        statement = (
+            select(PaperRecord)
+            .where(
+                PaperRecord.download_status == "downloaded",
+                PaperRecord.preprocessing_status == "pending",
+            )
+            .order_by(PaperRecord.published_at.desc())
+        )
+
+        if limit is not None:
+            statement = statement.limit(limit)
+
+        return list(
+            self.session.scalars(statement).all()
+        )
+
+
+    def mark_preprocessing(
+        self,
+        record: PaperRecord,
+    ) -> None:
+        record.preprocessing_status = "processing"
+        record.error_message = None
+
+        self.session.commit()
+
+
+    def mark_processed(
+        self,
+        record: PaperRecord,
+    ) -> None:
+        record.preprocessing_status = "processed"
+        record.error_message = None
+
+        self.session.commit()
+
+
+    def mark_preprocessing_failed(
+        self,
+        record: PaperRecord,
+        error_message: str,
+    ) -> None:
+        record.preprocessing_status = "failed"
         record.error_message = error_message
 
         self.session.commit()
